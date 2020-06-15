@@ -8,5 +8,5 @@
 
 [コマンド]
 ```
-python csv_get_test_cycle_urls.py -a [apyキー] -o [出力先フォルダ]
+python csv_get_test_cycle_urls.py -a [apiキー] -o [出力先フォルダ]
 ```
