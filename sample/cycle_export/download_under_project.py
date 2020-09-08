@@ -17,7 +17,7 @@ import time
 
 #【定数】
 BASE_API_URL = 'https://cloud.veriserve.co.jp/'
-SLEEP_TIME = 0.5
+SLEEP_TIME = 1.0
 
 
 def strip_quotes(src):
