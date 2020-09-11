@@ -91,6 +91,40 @@ def get_request_pages(mid_url, content_name):
     return ret
 
 # -----------------------------------------------------------
+# APIからプロジェクトの情報を取得する
+#
+# Returns:
+#  project_id（int）：プロジェクトのid
+#  default_label_content（dict）：ラベルコンテンツのデファルト値の一覧
+# -----------------------------------------------------------
+def get_project_info():
+    project_id = None
+    default_label_content = {}
+    url = build_url_api('current_project')
+
+    #APIにリクエストを送信する
+    response = requests.get(url)
+    time.sleep(SLEEP_TIME)
+    #応答結果の確認
+    if response.status_code != 200:
+        return None
+    content = json.loads(response.content)
+    #リストに結果を格納する
+    project_id = content['id']
+    i = 1
+    while i < 50:
+        try:
+            #ラベルコンテンツのデファルトを格納する
+            label = content['default_label_content' + str(i)]
+            if label is not None and str(label).strip() != '' and label.find('content') == -1:
+                default_label_content[i] = label
+        except KeyError:
+            break
+        i += 1
+
+    return project_id, default_label_content
+
+# -----------------------------------------------------------
 # 名前でテストスイートの存在をチェックします
 #
 # Parameters:
@@ -106,7 +140,7 @@ def check_exist_test_suite(test_suite_name):
         return None
     #テストスイートが存在する場合
     for x in _test_suite_list:
-        if x['name'] == test_suite_name:
+        if x['name'] == test_suite_name and x['project_id'] == project_id:
             test_suite_id = x['id']
 
     return test_suite_id
@@ -293,6 +327,10 @@ def create_new_suite(test_suite_name, ws_rows):
             payload = payload + "&test_suite[use_category" + str(no) + "]=true"
             no += 1
         j += 1
+    
+    for x in _default_label_content:
+        payload = payload + "&test_suite[label_content" + str(x) + "]=" + str(_default_label_content[x])
+        payload = payload + "&test_suite[use_content" + str(x) + "]=true"
 
     #作成時間を設定する
     payload = payload + '&test_suite[created_at]=' + NOW
@@ -554,9 +592,10 @@ if __name__ == '__main__':
     global _col_start_index
     global _col_end_index
     global _col_priority_index
+    global _default_label_content
 
     #project_idを取得する
-    project_id = get_request_pages('current_project','id')
+    project_id, _default_label_content = get_project_info()
     if project_id is None:
         print('APIキーが不正です。')
         exit()
