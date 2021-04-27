@@ -13,7 +13,7 @@ class Result:
         _QF_RESULT_SKIP = 3
         _QF_RESULT_NA = 6
 
-        if result == "passed":
+        if result == "pass":
             self.result = _QF_RESULT_PASS
         elif result == "failure" or result == "error":
             self.result = _QF_RESULT_FAIL
