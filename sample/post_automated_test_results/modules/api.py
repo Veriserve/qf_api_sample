@@ -28,6 +28,7 @@ class API:
         qf_api_url = self.base_url + "users" + "?api_key=" + self.api_key
 
         res = requests.get(qf_api_url, verify=False)
+        time.sleep(1)
         if res.status_code == 200:
             return json.loads(res.text)
         else:
@@ -61,6 +62,7 @@ class API:
             data=data_cycle,
             verify=False,
         )
+        time.sleep(1)
 
         if res.status_code == self._STATUS_CREATED:
             print("テストサイクルを作成しました: " + data_cycle["test_cycle[name]"])
@@ -81,6 +83,7 @@ class API:
         )
 
         res = requests.get(qf_api_url, verify=False)
+        time.sleep(1)
 
         if res.status_code == self._STATUS_OK:
             return json.loads(res.text)["test_cases"]
@@ -132,12 +135,11 @@ class API:
                     data=data,
                     verify=False,
                 )
+                time.sleep(1)
 
                 if res.status_code == self._STATUS_CREATED:
                     print("テスト結果投入完了 : " + str(i + 1) + " / " + str(len(results)))
                 if res.status_code != self._STATUS_CREATED:
                     raise Exception("テスト結果作成に失敗しました")
-
-                time.sleep(1)  # a restriction of QF-API
 
         print("Done")
